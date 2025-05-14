@@ -12,7 +12,9 @@ useHead({
 
 <template>
   <main>
-    <h1 class="text-center text-3xl mt-4 mb-8 font-medium">Scholarship winners table</h1>
+    <h1 class="text-center text-3xl mt-4 mb-8 font-medium">
+      Scholarship winners table
+    </h1>
     <ScholarshipWinnersTable />
   </main>
 </template>

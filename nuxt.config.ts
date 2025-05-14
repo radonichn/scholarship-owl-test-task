@@ -2,16 +2,20 @@ import Material from '@primeuix/themes/material';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineNuxtConfig({
-  compatibilityDate: '2024-11-01',
+  modules: ['@nuxt/eslint', '@primevue/nuxt-module'],
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   vite: {
     plugins: [tailwindcss()],
   },
   typescript: {
-    typeCheck: true
+    typeCheck: true,
   },
-  modules: ['@nuxt/eslint', '@primevue/nuxt-module'],
+  eslint: {
+    config: {
+      stylistic: true,
+    },
+  },
   primevue: {
     options: {
       theme: {
