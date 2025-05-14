@@ -1,5 +1,4 @@
 <template>
-  <div>
-    <ScholarshipWinnersTable />
-  </div>
+  <Toast />
+  <NuxtPage />
 </template>
