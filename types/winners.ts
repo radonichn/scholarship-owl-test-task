@@ -1,4 +1,4 @@
-export interface IWinnerAttributes {
+export interface WinnerAttributes {
   amountWon: number;
   winnerName: string;
   wonAt: string;
@@ -9,8 +9,8 @@ export interface IWinnerAttributes {
   testimonialText: string;
 }
 
-export interface IWinner {
+export interface Winner {
   type: string;
   id: string;
-  attributes: IWinnerAttributes;
+  attributes: WinnerAttributes;
 }

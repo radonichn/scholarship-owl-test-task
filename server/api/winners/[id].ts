@@ -1,8 +1,8 @@
-import type { IWinner } from '@/types/winners';
+import type { Winner } from '@/types/winners';
 
-export default defineEventHandler(async (event): Promise<IWinner> => {
+export default defineEventHandler(async (event): Promise<Winner> => {
   try {
-    const res = await $fetch<{ data: IWinner[] }>('https://scholarshipowl.com/jsonapi/winner');
+    const res = await $fetch<{ data: Winner[] }>('https://scholarshipowl.com/jsonapi/winner');
     const winnerId = getRouterParam(event, 'id');
     const winner = res.data.find(v => v.id === winnerId);
 
