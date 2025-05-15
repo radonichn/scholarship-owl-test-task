@@ -1,26 +1,26 @@
 <script setup lang="ts">
 import type { IWinner } from '~/types/winners';
+import { formatDate } from '#shared/utils/formatDate';
 
 const toast = useToast();
-const dayjs = useDayjs();
+
+const rowsPerPage = ref([10, 20, 50]);
 
 const scholarshipWinners = ref<IWinner[] | null>(null);
 const isLoading = ref<boolean>(true);
 
-const getFormattedDateTime = (date: string): string => dayjs(date).format('MM-DD-YYYY');
+const fetchWinners = async () => {
+  const { data, error, status } = await useWinners();
 
-const fetchWinners = () => {
-  const { data, error, pending } = useWinners();
-
-  isLoading.value = pending.value;
+  isLoading.value = status.value === 'pending';
 
   if (error?.value) {
     toast.add({
       severity: 'error',
       summary: 'Error',
-      detail: 'Something went wrong, please try again', life: 3000,
+      detail: 'Something went wrong, please try again',
+      life: 3000,
     });
-    return;
   }
 
   if (data.value?.data) {
@@ -28,50 +28,60 @@ const fetchWinners = () => {
   }
 };
 fetchWinners();
-
-watch(() => scholarshipWinners.value, (newValue) => {
-  if (newValue) {
-    isLoading.value = false;
-  }
-}, { immediate: true });
 </script>
 
 <template>
-  <div>
-    Loading: <p>{{ JSON.stringify(isLoading) }}</p>
+  <div class="max-w-5xl shadow px-4 rounded-lg mx-auto bg-white">
+    <DataTableSkeleton
+      v-if="isLoading"
+      :rows="rowsPerPage[0]"
+    />
     <DataTable
+      v-else
       :value="scholarshipWinners"
       paginator
-      :rows="5"
-      :rows-per-page-options="[5, 10, 20, 50]"
-      class="max-w-5xl mx-auto"
+      :rows="rowsPerPage[0]"
+      :rows-per-page-options="rowsPerPage"
+      striped-rows
+      class="w-full mx-auto"
     >
       <Column header="Photo">
         <template #body="slotProps">
-          <Skeleton v-if="isLoading" />
           <img
             :src="`${slotProps.data.attributes.winnerPhoto}`"
             :alt="slotProps.data.attributes.winnerName"
-            class="w-12 rounded"
+            class="w-12 h-12 rounded-full"
           >
         </template>
       </Column>
       <Column
         field="attributes.winnerName"
         header="Name"
-      >
-        <Skeleton v-if="isLoading" />
-      </Column>
-      <Column header="Amount won">
-        <Skeleton v-if="isLoading" />
+      />
+      <Column header="Scholarship title">
         <template #body="slotProps">
-          <p>${{ slotProps.data.attributes.amountWon }}</p>
+          <p>{{ slotProps.data.attributes.scholarshipTitle }}</p>
         </template>
       </Column>
       <Column header="Won at">
-        <Skeleton v-if="isLoading" />
         <template #body="slotProps">
-          <p>{{ getFormattedDateTime(slotProps.data.attributes.wonAt) }}</p>
+          <p>{{ formatDate(slotProps.data.attributes.wonAt) }}</p>
+        </template>
+      </Column>
+      <Column header="More">
+        <template #body="slotProps">
+          <NuxtLink
+            :to="{
+              name: 'winner-id',
+              params: { id: slotProps.data.id },
+            }"
+          >
+            <Button
+              label="More info"
+              variant="outlined"
+              size="small"
+            />
+          </NuxtLink>
         </template>
       </Column>
     </DataTable>

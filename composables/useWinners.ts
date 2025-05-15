@@ -1,12 +1,13 @@
 import type { IWinner } from '~/types/winners';
+import type { AsyncDataRequestStatus } from '#app';
 
-export const useWinners = (): {
+export const useWinners = async (): Promise<{
   data: Ref<{ data: IWinner[] } | null>;
   error: Ref<unknown>;
-  pending: Ref<boolean>;
-} => {
-  const { data, error, pending } = useLazyFetch<{ data: IWinner[] }>(
-    'https://scholarshipowl.com/jsonapi/winner',
+  status: Ref<AsyncDataRequestStatus>;
+}> => {
+  const { data, error, status } = await useAsyncData('winners', () =>
+    $fetch<{ data: IWinner[] }>('/api/winners'),
   );
-  return { data, error, pending };
+  return { data, error, status };
 };
