@@ -21,8 +21,6 @@ const fetchWinner = async () => {
     });
   }
 
-  console.log(data.value, 'here we go');
-
   if (data.value) {
     scholarshipWinner.value = data.value;
   }
