@@ -16,8 +16,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-
 const { rows = 5, cols = 5 } = defineProps<{ rows?: number; cols?: number }>();
 
 const skeletonRows = ref(

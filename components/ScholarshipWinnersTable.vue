@@ -1,44 +1,32 @@
 <script setup lang="ts">
-import type { IWinner } from '~/types/winners';
 import { formatDate } from '#shared/utils/formatDate';
+import { getWinnersList } from '~/api/winners';
 
 const toast = useToast();
 
 const rowsPerPage = ref([10, 20, 50]);
 
-const scholarshipWinners = ref<IWinner[] | null>(null);
-const isLoading = ref<boolean>(true);
+const { data, error, pending } = await useLazyAsyncData(getWinnersList);
 
-const fetchWinners = async () => {
-  const { data, error, status } = await useWinners();
-
-  isLoading.value = status.value === 'pending';
-
-  if (error?.value) {
-    toast.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'Something went wrong, please try again',
-      life: 3000,
-    });
-  }
-
-  if (data.value?.data) {
-    scholarshipWinners.value = data.value?.data;
-  }
-};
-fetchWinners();
+if (error?.value) {
+  toast.add({
+    severity: 'error',
+    summary: 'Error',
+    detail: 'Something went wrong, please try again',
+    life: 3000,
+  });
+}
 </script>
 
 <template>
   <div class="max-w-5xl shadow px-4 rounded-lg mx-auto bg-white">
-    <DataTableSkeleton
-      v-if="isLoading"
+    <SkeletonDataTable
+      v-if="pending"
       :rows="rowsPerPage[0]"
     />
     <DataTable
-      v-else
-      :value="scholarshipWinners"
+      v-else-if="data"
+      :value="data"
       paginator
       :rows="rowsPerPage[0]"
       :rows-per-page-options="rowsPerPage"
@@ -47,11 +35,11 @@ fetchWinners();
     >
       <Column header="Photo">
         <template #body="slotProps">
-          <img
-            :src="`${slotProps.data.attributes.winnerPhoto}`"
-            :alt="slotProps.data.attributes.winnerName"
-            class="w-12 h-12 rounded-full"
-          >
+          <Avatar
+            :image="slotProps.data.attributes.winnerPhoto"
+            shape="circle"
+            size="large"
+          />
         </template>
       </Column>
       <Column
