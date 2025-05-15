@@ -1,21 +1,24 @@
 <script setup lang="ts">
-import { formatDate } from '#shared/utils/formatDate';
+import { DEFAULT_DATE_FORMAT } from '#shared/utils/constants';
 import { getWinnersList } from '~/api/winners';
 
 const toast = useToast();
+const dayjs = useDayjs();
 
 const rowsPerPage = ref([10, 20, 50]);
 
 const { data, error, pending } = await useLazyAsyncData(getWinnersList);
 
-if (error?.value) {
-  toast.add({
-    severity: 'error',
-    summary: 'Error',
-    detail: 'Something went wrong, please try again',
-    life: 3000,
-  });
-}
+onMounted(() => {
+  if (error?.value) {
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: error.value.statusMessage,
+      life: 3000,
+    });
+  }
+});
 </script>
 
 <template>
@@ -53,7 +56,7 @@ if (error?.value) {
       </Column>
       <Column header="Won at">
         <template #body="slotProps">
-          <p>{{ formatDate(slotProps.data.attributes.wonAt) }}</p>
+          <p>{{ dayjs(slotProps.data.attributes.wonAt).format(DEFAULT_DATE_FORMAT) }}</p>
         </template>
       </Column>
       <Column header="More">
